@@ -1,175 +1,285 @@
 ---
-import { getEmDashCollection } from "emdash";
-import { Image } from "emdash/ui";
 import Base from "../layouts/Base.astro";
-
-const { entries: posts, cacheHint } = await getEmDashCollection("posts");
-Astro.cache.set(cacheHint);
-
-const sortedPosts = posts.toSorted((a, b) => {
-	const dateA = a.data.publishedAt?.getTime() ?? 0;
-	const dateB = b.data.publishedAt?.getTime() ?? 0;
-	return dateB - dateA;
-});
-
-function formatDate(date: Date | null | undefined) {
-	if (!date) return null;
-	return date.toLocaleDateString("nb-NO", {
-		year: "numeric",
-		month: "long",
-		day: "numeric",
-	});
-}
 ---
 
 <Base title="Klipperhotell" description="Vi lagrer din robotklipper - en del av Mortenshage.no">
-	{posts.length === 0 ? (
-		<section class="empty-state">
-			<h2>Ingen innlegg ennå</h2>
-			<p>Opprett ditt første innlegg i admin-panelet.</p>
-			<a href="/_emdash/admin/content/posts/new" class="btn">Opprett innlegg</a>
-		</section>
-	) : (
-		<div class="posts-listing">
-			{sortedPosts.map((post) => (
-				<article class="post-entry">
-					{post.data.featured_image && (
-						<a href={`/posts/${post.id}`} class="post-thumbnail">
-							<Image image={post.data.featured_image} />
-						</a>
-					)}
-					<div class="post-content">
-						<h2 class="post-title">
-							<a href={`/posts/${post.id}`}>{post.data.title}</a>
-						</h2>
-						<div class="post-meta">
-							{formatDate(post.data.publishedAt) && (
-								<time>{formatDate(post.data.publishedAt)}</time>
-							)}
-						</div>
-						{post.data.excerpt && (
-							<p class="post-excerpt">{post.data.excerpt}</p>
-						)}
-						<a href={`/posts/${post.id}`} class="read-more">Les mer &raquo;</a>
-					</div>
-				</article>
-			))}
+	<!-- Hero Slider -->
+	<section class="hero">
+		<div class="hero-image">
+			<img src="/_emdash/api/media/file/01KN5EKZ4TG4TYMW4KDK5AWBX5.png" alt="Klipperhotell vinterservice" />
 		</div>
-	)}
+		<div class="hero-overlay">
+			<h2 class="hero-title">Vinterservice er viktig</h2>
+			<p class="hero-text">Din robotgressklipper får en hylleplass i vårt oppvarmede lager hele vinteren.</p>
+			<a href="/pages/hvorfor-vinterservice" class="hero-btn">Se hvorfor</a>
+		</div>
+	</section>
+
+	<!-- Intro -->
+	<section class="intro">
+		<h2 class="intro-title">Vinterlagre din robotgressklipper hos oss!</h2>
+		<p>Gjør som mange andre kunder - la oss vinterlagre din robotgressklipper på vårt klipperhotell!</p>
+	</section>
+
+	<!-- CTA Bar -->
+	<section class="cta-bar">
+		<span class="cta-text">Bestill vinterlagring!</span>
+		<a href="/pages/vinterservice-klipperhotell" class="cta-btn">Klikk her</a>
+	</section>
+
+	<!-- Services -->
+	<section class="services">
+		<div class="services-grid">
+			<div class="service-col">
+				<h3>RENGJØRING</h3>
+				<p>Vi rengjør din robotgressklipper innvendig og utvendig, og sjekker samtidig at alle deler og komponenter er i orden. Din robotgressklipper får en hylleplass i vårt oppvarmede lager hele vinteren. Funksjons- og sikkerhetskontroll av alle deler. Om noe behøver å byttes, gir vi beskjed om det, og vi kan fikse det for deg. Innfetting/smøring av alle bevegelige deler med spesialmiddel. Kontroll av kniver og bytting av side der det er mulig. Bytte av kniver etter avtale.</p>
+
+				<h4>Hvorfor vinterservice?</h4>
+				<p>Jo, fordi det er viktig for at din robotgressklipper skal fungere bra i mange år! Det samles mye gress under dekslene og dette sliter på delene. Det er viktig å sjekke alle slitedeler for å unngå unødvendige høye kostnader.</p>
+				<a href="/pages/hvorfor-vinterservice" class="read-more">Les mer</a>
+			</div>
+			<div class="service-col">
+				<h3>OPPDATERING</h3>
+				<p>Programvaren i din robotgressklipper utvikles og forbedres hele tiden, og i løpet av vinteren oppdaterer vi til den siste versjonen. Alt for at du skal få et så bra klipperesultat som mulig!</p>
+
+				<h3 class="mt">VEDLIKEHOLDSLADING</h3>
+				<p>Vi vedlikeholdslader batteriene /batteriet i din robotgressklipper gjennom vintersesongen. Klipperen er klar for å klippe gressplenen din når våren kommer!</p>
+			</div>
+		</div>
+	</section>
+
+	<!-- Testimonial -->
+	<section class="testimonial">
+		<h3>Anbefaling</h3>
+		<blockquote>
+			<p>Plenen har aldri sett bedre ut</p>
+			<cite>Tom Kittelsen, Hagegal</cite>
+		</blockquote>
+	</section>
 </Base>
 
 <style>
-	.posts-listing {
-		max-width: 800px;
+	/* ── Hero ─────────────────────────── */
+	.hero {
+		position: relative;
+		margin: -30px -25px 0;
+		overflow: hidden;
 	}
 
-	.post-entry {
-		display: flex;
-		gap: 1.5rem;
-		padding: 1.5rem 0;
-		border-bottom: 1px solid var(--color-border);
-	}
-
-	.post-entry:first-child {
-		padding-top: 0;
-	}
-
-	.post-entry:last-child {
-		border-bottom: none;
-	}
-
-	.post-thumbnail {
-		flex-shrink: 0;
-		width: 250px;
-		display: block;
-	}
-
-	.post-thumbnail img {
+	.hero-image img {
 		width: 100%;
 		height: auto;
 		display: block;
+		min-height: 300px;
+		object-fit: cover;
 	}
 
-	.post-content {
-		flex: 1;
-		min-width: 0;
+	.hero-overlay {
+		position: absolute;
+		top: 50%;
+		left: 40px;
+		transform: translateY(-50%);
+		background: rgba(255, 255, 255, 0.92);
+		padding: 30px 35px;
+		max-width: 420px;
 	}
 
-	.post-title {
-		font-size: var(--font-size-2xl);
+	.hero-title {
+		font-size: 26px;
 		font-weight: 700;
-		margin-bottom: 0.5rem;
-		line-height: 1.3;
-	}
-
-	.post-title a {
 		color: var(--color-heading);
-		text-decoration: none;
+		margin-bottom: 10px;
 	}
 
-	.post-title a:hover {
-		color: var(--color-accent);
-	}
-
-	.post-meta {
-		font-size: var(--font-size-sm);
-		color: var(--color-muted);
-		margin-bottom: 0.75rem;
-	}
-
-	.post-excerpt {
+	.hero-text {
+		font-size: 14px;
 		color: var(--color-text);
 		line-height: 1.7;
-		margin-bottom: 0.75rem;
+		margin-bottom: 16px;
+	}
+
+	.hero-btn {
+		display: inline-block;
+		padding: 8px 25px;
+		background: var(--color-accent);
+		color: white !important;
+		font-size: 14px;
+		font-weight: 700;
+		text-decoration: none;
+		border-radius: 3px;
+		transition: box-shadow 0.2s;
+	}
+
+	.hero-btn:hover {
+		box-shadow: 0 0 2px rgba(0, 0, 0, 0.6);
+		color: white !important;
+	}
+
+	/* ── Intro ────────────────────────── */
+	.intro {
+		padding: 35px 0 25px;
+	}
+
+	.intro-title {
+		font-size: 26px;
+		font-weight: 700;
+		color: var(--color-heading);
+		margin-bottom: 10px;
+	}
+
+	.intro p {
+		color: var(--color-text);
+		line-height: 1.8;
+	}
+
+	/* ── CTA Bar ─────────────────────── */
+	.cta-bar {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 15px 20px;
+		border-left: 4px solid var(--color-accent);
+		background: #f9f9f9;
+		margin-bottom: 30px;
+	}
+
+	.cta-text {
+		font-size: 20px;
+		font-weight: 700;
+		color: var(--color-heading);
+	}
+
+	.cta-btn {
+		display: inline-block;
+		padding: 8px 25px;
+		background: var(--color-accent);
+		color: white !important;
+		font-size: 14px;
+		font-weight: 700;
+		text-decoration: none;
+		border-radius: 3px;
+		transition: box-shadow 0.2s;
+	}
+
+	.cta-btn:hover {
+		box-shadow: 0 0 2px rgba(0, 0, 0, 0.6);
+		color: white !important;
+	}
+
+	/* ── Services ─────────────────────── */
+	.services {
+		margin-bottom: 30px;
+	}
+
+	.services-grid {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 40px;
+	}
+
+	.service-col h3 {
+		font-size: 22px;
+		font-weight: 700;
+		color: var(--color-heading);
+		margin-bottom: 12px;
+		text-transform: uppercase;
+	}
+
+	.service-col h3.mt {
+		margin-top: 30px;
+	}
+
+	.service-col h4 {
+		font-size: 18px;
+		font-weight: 700;
+		color: var(--color-heading);
+		margin-top: 25px;
+		margin-bottom: 10px;
+	}
+
+	.service-col p {
+		color: var(--color-text);
+		line-height: 1.8;
+		margin-bottom: 12px;
 	}
 
 	.read-more {
 		display: inline-block;
-		padding: 0.4rem 1.2rem;
+		padding: 5px 18px;
 		background: var(--color-accent);
 		color: white !important;
-		font-size: var(--font-size-sm);
+		font-size: 13px;
 		font-weight: 700;
 		text-decoration: none;
-		transition: background 0.2s;
+		border-radius: 3px;
+		transition: box-shadow 0.2s;
 	}
 
 	.read-more:hover {
-		background: var(--color-accent-hover);
+		box-shadow: 0 0 2px rgba(0, 0, 0, 0.6);
 		color: white !important;
 	}
 
-	.empty-state {
-		text-align: center;
-		padding: 4rem 1rem;
+	/* ── Testimonial ─────────────────── */
+	.testimonial {
+		margin-bottom: 30px;
 	}
 
-	.empty-state h2 {
-		font-size: var(--font-size-2xl);
-		margin-bottom: 0.5rem;
-	}
-
-	.empty-state p {
-		color: var(--color-muted);
-		margin-bottom: 1rem;
-	}
-
-	.btn {
-		display: inline-block;
-		padding: 0.5rem 1.5rem;
-		background: var(--color-accent);
-		color: white;
-		text-decoration: none;
+	.testimonial h3 {
+		font-size: 22px;
 		font-weight: 700;
+		color: var(--color-heading);
+		margin-bottom: 15px;
 	}
 
-	@media (max-width: 600px) {
-		.post-entry {
-			flex-direction: column;
+	.testimonial blockquote {
+		border-left: 4px solid var(--color-accent);
+		padding: 15px 20px;
+		margin: 0;
+		background: #f9f9f9;
+	}
+
+	.testimonial blockquote p {
+		font-size: 16px;
+		font-style: italic;
+		color: var(--color-text);
+		line-height: 1.7;
+		margin-bottom: 8px;
+	}
+
+	.testimonial cite {
+		font-size: 14px;
+		color: var(--color-muted);
+		font-style: normal;
+	}
+
+	/* ── Responsive ──────────────────── */
+	@media (max-width: 768px) {
+		.hero {
+			margin: -30px -25px 0;
 		}
 
-		.post-thumbnail {
-			width: 100%;
+		.hero-overlay {
+			position: relative;
+			top: auto;
+			left: auto;
+			transform: none;
+			max-width: none;
+			background: rgba(255, 255, 255, 0.95);
+			margin-top: -40px;
+			margin-left: 15px;
+			margin-right: 15px;
+		}
+
+		.services-grid {
+			grid-template-columns: 1fr;
+			gap: 20px;
+		}
+
+		.cta-bar {
+			flex-direction: column;
+			gap: 12px;
+			text-align: center;
 		}
 	}
 </style>
