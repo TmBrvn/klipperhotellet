@@ -90,6 +90,10 @@ const currentPath = Astro.url.pathname;
 					<p class="site-tagline">{siteTagline}</p>
 				</div>
 				<div class="header-right">
+					<form action="/search" method="get" class="header-search">
+						<input type="text" name="q" placeholder="Søk..." class="header-search-input" />
+						<button type="submit" class="header-search-btn" aria-label="Søk">🔍</button>
+					</form>
 					<nav class="main-nav">
 						<button class="menu-toggle" aria-label="Menu" aria-expanded="false">
 							☰ Menu
@@ -291,7 +295,33 @@ const currentPath = Astro.url.pathname;
 
 			.header-right {
 				text-align: right;
-				padding-top: 0.5rem;
+				padding-top: 0.25rem;
+				display: flex;
+				flex-direction: column;
+				align-items: flex-end;
+				gap: 6px;
+			}
+
+			.header-search {
+				display: flex;
+			}
+
+			.header-search-input {
+				padding: 5px 8px;
+				border: 1px solid #ddd;
+				font-family: var(--font-sans);
+				font-size: 13px;
+				width: 160px;
+			}
+
+			.header-search-btn {
+				padding: 5px 10px;
+				background: var(--color-accent);
+				border: none;
+				color: white;
+				cursor: pointer;
+				font-size: 13px;
+				line-height: 1;
 			}
 
 			/* ── Navigation ─────────────────── */

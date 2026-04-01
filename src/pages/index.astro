@@ -52,6 +52,7 @@ import Base from "../layouts/Base.astro";
 	<section class="testimonial">
 		<h3>Anbefaling</h3>
 		<blockquote>
+			<span class="quote-mark">"</span>
 			<p>Plenen har aldri sett bedre ut</p>
 			<cite>Tom Kittelsen, Hagegal</cite>
 		</blockquote>
@@ -64,46 +65,47 @@ import Base from "../layouts/Base.astro";
 		position: relative;
 		margin: -30px -25px 0;
 		overflow: hidden;
+		max-height: 380px;
 	}
 
 	.hero-image img {
 		width: 100%;
-		height: auto;
+		height: 380px;
 		display: block;
-		min-height: 300px;
 		object-fit: cover;
+		object-position: center;
 	}
 
 	.hero-overlay {
 		position: absolute;
 		top: 50%;
-		left: 40px;
+		left: 30px;
 		transform: translateY(-50%);
 		background: rgba(255, 255, 255, 0.92);
-		padding: 30px 35px;
-		max-width: 420px;
+		padding: 25px 30px;
+		max-width: 380px;
 	}
 
 	.hero-title {
-		font-size: 26px;
+		font-size: 24px;
 		font-weight: 700;
 		color: var(--color-heading);
-		margin-bottom: 10px;
+		margin-bottom: 8px;
 	}
 
 	.hero-text {
-		font-size: 14px;
+		font-size: 13px;
 		color: var(--color-text);
-		line-height: 1.7;
-		margin-bottom: 16px;
+		line-height: 1.6;
+		margin-bottom: 14px;
 	}
 
 	.hero-btn {
 		display: inline-block;
-		padding: 8px 25px;
+		padding: 7px 22px;
 		background: var(--color-accent);
 		color: white !important;
-		font-size: 14px;
+		font-size: 13px;
 		font-weight: 700;
 		text-decoration: none;
 		border-radius: 3px;
@@ -117,19 +119,20 @@ import Base from "../layouts/Base.astro";
 
 	/* ── Intro ────────────────────────── */
 	.intro {
-		padding: 35px 0 25px;
+		padding: 25px 0 20px;
 	}
 
 	.intro-title {
-		font-size: 26px;
+		font-size: 24px;
 		font-weight: 700;
 		color: var(--color-heading);
-		margin-bottom: 10px;
+		margin-bottom: 8px;
 	}
 
 	.intro p {
 		color: var(--color-text);
-		line-height: 1.8;
+		line-height: 1.7;
+		font-size: 15px;
 	}
 
 	/* ── CTA Bar ─────────────────────── */
@@ -137,24 +140,24 @@ import Base from "../layouts/Base.astro";
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		padding: 15px 20px;
+		padding: 12px 18px;
 		border-left: 4px solid var(--color-accent);
 		background: #f9f9f9;
-		margin-bottom: 30px;
+		margin-bottom: 25px;
 	}
 
 	.cta-text {
-		font-size: 20px;
+		font-size: 18px;
 		font-weight: 700;
 		color: var(--color-heading);
 	}
 
 	.cta-btn {
 		display: inline-block;
-		padding: 8px 25px;
+		padding: 7px 22px;
 		background: var(--color-accent);
 		color: white !important;
-		font-size: 14px;
+		font-size: 13px;
 		font-weight: 700;
 		text-decoration: none;
 		border-radius: 3px;
@@ -168,39 +171,44 @@ import Base from "../layouts/Base.astro";
 
 	/* ── Services ─────────────────────── */
 	.services {
-		margin-bottom: 30px;
+		margin-bottom: 25px;
+		padding-top: 20px;
+		border-top: 1px solid #eaeaea;
 	}
 
 	.services-grid {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
-		gap: 40px;
+		gap: 35px;
 	}
 
 	.service-col h3 {
-		font-size: 22px;
+		font-size: 20px;
 		font-weight: 700;
 		color: var(--color-heading);
-		margin-bottom: 12px;
+		margin-bottom: 10px;
+		padding-bottom: 8px;
+		border-bottom: 2px solid var(--color-accent);
 		text-transform: uppercase;
 	}
 
 	.service-col h3.mt {
-		margin-top: 30px;
+		margin-top: 25px;
 	}
 
 	.service-col h4 {
-		font-size: 18px;
+		font-size: 17px;
 		font-weight: 700;
 		color: var(--color-heading);
-		margin-top: 25px;
-		margin-bottom: 10px;
+		margin-top: 20px;
+		margin-bottom: 8px;
 	}
 
 	.service-col p {
 		color: var(--color-text);
-		line-height: 1.8;
-		margin-bottom: 12px;
+		line-height: 1.7;
+		margin-bottom: 10px;
+		font-size: 15px;
 	}
 
 	.read-more {
@@ -208,7 +216,7 @@ import Base from "../layouts/Base.astro";
 		padding: 5px 18px;
 		background: var(--color-accent);
 		color: white !important;
-		font-size: 13px;
+		font-size: 12px;
 		font-weight: 700;
 		text-decoration: none;
 		border-radius: 3px;
@@ -222,14 +230,18 @@ import Base from "../layouts/Base.astro";
 
 	/* ── Testimonial ─────────────────── */
 	.testimonial {
-		margin-bottom: 30px;
+		margin-bottom: 25px;
+		padding-top: 20px;
+		border-top: 1px solid #eaeaea;
 	}
 
 	.testimonial h3 {
-		font-size: 22px;
+		font-size: 20px;
 		font-weight: 700;
 		color: var(--color-heading);
-		margin-bottom: 15px;
+		margin-bottom: 12px;
+		padding-bottom: 8px;
+		border-bottom: 2px solid var(--color-accent);
 	}
 
 	.testimonial blockquote {
@@ -237,18 +249,29 @@ import Base from "../layouts/Base.astro";
 		padding: 15px 20px;
 		margin: 0;
 		background: #f9f9f9;
+		position: relative;
+	}
+
+	.quote-mark {
+		font-size: 60px;
+		font-weight: 700;
+		color: var(--color-accent);
+		line-height: 0.8;
+		display: block;
+		margin-bottom: 5px;
+		font-family: Georgia, serif;
 	}
 
 	.testimonial blockquote p {
-		font-size: 16px;
+		font-size: 15px;
 		font-style: italic;
 		color: var(--color-text);
-		line-height: 1.7;
+		line-height: 1.6;
 		margin-bottom: 8px;
 	}
 
 	.testimonial cite {
-		font-size: 14px;
+		font-size: 13px;
 		color: var(--color-muted);
 		font-style: normal;
 	}
@@ -257,6 +280,12 @@ import Base from "../layouts/Base.astro";
 	@media (max-width: 768px) {
 		.hero {
 			margin: -30px -25px 0;
+			max-height: none;
+		}
+
+		.hero-image img {
+			height: auto;
+			min-height: 200px;
 		}
 
 		.hero-overlay {
@@ -266,19 +295,19 @@ import Base from "../layouts/Base.astro";
 			transform: none;
 			max-width: none;
 			background: rgba(255, 255, 255, 0.95);
-			margin-top: -40px;
+			margin-top: -30px;
 			margin-left: 15px;
 			margin-right: 15px;
 		}
 
 		.services-grid {
 			grid-template-columns: 1fr;
-			gap: 20px;
+			gap: 15px;
 		}
 
 		.cta-bar {
 			flex-direction: column;
-			gap: 12px;
+			gap: 10px;
 			text-align: center;
 		}
 	}
