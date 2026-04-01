@@ -1,5 +1,5 @@
 ---
-import { getMenu, getEmDashCollection, getSiteSettings } from "emdash";
+import { getMenu, getSiteSettings } from "emdash";
 import {
 	WidgetArea,
 	EmDashHead,
@@ -7,7 +7,6 @@ import {
 	EmDashBodyEnd,
 } from "emdash/ui";
 import { createPublicPageContext } from "emdash/page";
-import LiveSearch from "emdash/ui/search";
 import "../styles/theme.css";
 
 interface Props {
@@ -21,6 +20,8 @@ interface Props {
 	modifiedTime?: string | null;
 	author?: string | null;
 	content?: { collection: string; id: string; slug?: string | null };
+	/** Show right sidebar (default: false) */
+	sidebar?: boolean;
 }
 
 const {
@@ -34,6 +35,7 @@ const {
 	modifiedTime,
 	author,
 	content,
+	sidebar = false,
 } = Astro.props;
 
 const settings = await getSiteSettings();
@@ -42,7 +44,6 @@ const siteTagline = settings?.tagline || "Vi lagrer din robotklipper - en del av
 const fullTitle = title.includes(siteTitle) ? title : `${title} — ${siteTitle}`;
 
 const menu = await getMenu("primary");
-const { entries: pages } = await getEmDashCollection("pages");
 
 const pageCtx = createPublicPageContext({
 	Astro,
@@ -60,15 +61,15 @@ const pageCtx = createPublicPageContext({
 
 const isLoggedIn = !!Astro.locals.user;
 
-// Default nav items if no menu configured yet
 const navItems = menu?.items ?? [
 	{ label: "Hjem", url: "/", target: null },
-	{ label: "Vinterservice 2023/24", url: "/pages/vinterservice-klipperhotell", target: null },
-	{ label: "Hvorfor vinterservice?", url: "/pages/hvorfor-vinterservice", target: null },
+	{ label: "Klipperhotell & vinterservice 2023/24", url: "/pages/vinterservice-klipperhotell", target: null },
 	{ label: "Om", url: "/pages/om", target: null },
-	{ label: "Blog", url: "/posts", target: null },
+	{ label: "Blogg", url: "/posts", target: null },
 	{ label: "Kontakt oss", url: "/pages/kontakt-oss", target: null },
 ];
+
+const currentPath = Astro.url.pathname;
 ---
 
 <!doctype html>
@@ -83,77 +84,109 @@ const navItems = menu?.items ?? [
 		<EmDashBodyStart page={pageCtx} />
 
 		<header class="site-header">
-			<div class="header-top">
-				<div class="header-inner">
-					<div class="site-branding">
-						<a href="/" class="site-title">{siteTitle}</a>
-						<p class="site-tagline">{siteTagline}</p>
-					</div>
+			<div class="header-inner">
+				<div class="header-left">
+					<h1 class="site-title"><a href="/">{siteTitle}</a></h1>
+					<p class="site-tagline">{siteTagline}</p>
+				</div>
+				<div class="header-right">
+					<nav class="main-nav">
+						<button class="menu-toggle" aria-label="Menu" aria-expanded="false">
+							☰ Menu
+						</button>
+						<ul class="nav-menu" id="nav-menu">
+							{navItems.map((item) => (
+								<li class={currentPath === item.url ? "active" : ""}>
+									<a href={item.url} target={item.target}>{item.label}</a>
+								</li>
+							))}
+							{isLoggedIn && (
+								<li>
+									<a href="/_emdash/admin" class="nav-admin">Admin</a>
+								</li>
+							)}
+						</ul>
+					</nav>
 				</div>
 			</div>
-			<nav class="main-nav">
-				<div class="nav-inner">
-					<button class="menu-toggle" aria-label="Menu" aria-expanded="false">
-						<span class="menu-icon"></span>
-						Menu
-					</button>
-					<ul class="nav-menu" id="nav-menu">
-						{navItems.map((item) => (
-							<li>
-								<a href={item.url} target={item.target}>{item.label}</a>
-							</li>
-						))}
-						{isLoggedIn && (
-							<li>
-								<a href="/_emdash/admin" class="nav-admin">Admin</a>
-							</li>
-						)}
-					</ul>
-				</div>
-			</nav>
 		</header>
 
 		<div class="page-wrapper">
-			<main class="site-content">
-				<slot />
-			</main>
+			{sidebar ? (
+				<div class="content-with-sidebar">
+					<main class="site-content">
+						<slot />
+					</main>
+					<aside class="sidebar">
+						<div class="widget">
+							<h3 class="widget-title">Søk</h3>
+							<form action="/search" method="get" class="search-form">
+								<input type="text" name="q" placeholder="Søk..." class="search-input" />
+								<button type="submit" class="search-btn">🔍</button>
+							</form>
+						</div>
+						<div class="widget">
+							<h3 class="widget-title">Arkiver</h3>
+							<ul class="widget-list">
+								<li><a href="/posts">Alle innlegg</a></li>
+							</ul>
+						</div>
+						<WidgetArea name="sidebar" />
+					</aside>
+				</div>
+			) : (
+				<main class="site-content">
+					<slot />
+				</main>
+			)}
 		</div>
 
 		<footer class="site-footer">
 			<div class="footer-widgets">
-				<div class="footer-inner">
+				<div class="footer-inner-grid">
 					<div class="footer-col">
-						<h4>Om {siteTitle}</h4>
-						<p>{siteTagline}</p>
-					</div>
-					<div class="footer-col">
-						<h4>Navigasjon</h4>
-						<ul>
-							{navItems.slice(0, 5).map((item) => (
-								<li><a href={item.url}>{item.label}</a></li>
-							))}
-						</ul>
-					</div>
-					<div class="footer-col">
-						<h4>Kontakt</h4>
+						<h4>Finn oss</h4>
+						<p>Adresse:</p>
+						<p>Stensrudvegen 5A<br />2335 Stange</p>
 						<p>Telefon: 97 800 800</p>
-						<p>Epost: post@klipperhotell.no</p>
-						<WidgetArea name="footer" />
+						<p>Morten: 45 45 35 84</p>
+						<p><a href="mailto:post@klipperhotell.no">post@klipperhotell.no</a></p>
+					</div>
+					<div class="footer-col">
+						<h4>Søk</h4>
+						<form action="/search" method="get" class="footer-search">
+							<input type="text" name="q" placeholder="Søk..." />
+						</form>
+						<h4 class="mt">Om Klipperhotell</h4>
+						<p>Sjekk også ut <a href="https://www.mortenshage.no">Mortenshage.no</a> for mer informasjon.</p>
+					</div>
+					<div class="footer-col">
+						<h4>Se også</h4>
+						<p><a href="https://www.mortenshage.no">mortenshage.no</a></p>
+					</div>
+					<div class="footer-col">
+						<h4>Hvorfor vinterservice?</h4>
+						<p>Jo, fordi det er viktig for at din robotgressklipper skal fungere bra i mange år!</p>
+						<p><a href="/pages/hvorfor-vinterservice">Les mer</a></p>
 					</div>
 				</div>
 			</div>
 			<div class="footer-socket">
-				<div class="footer-inner">
-					<p>
-						Powered by <a href="https://emdashcms.com">EmDash</a>
-						&nbsp;|&nbsp; En del av <a href="https://www.mortenshage.no">Mortenshage.no</a>
+				<div class="footer-socket-inner">
+					<p class="copyright">
+						Copyright &copy; 2026 {siteTitle}. All rights reserved.
+						Powered by <a href="https://emdashcms.com">EmDash</a>.
 					</p>
+					<nav class="footer-nav">
+						{navItems.slice(1).map((item) => (
+							<a href={item.url}>{item.label}</a>
+						))}
+					</nav>
 				</div>
 			</div>
 		</footer>
 
 		<script>
-			// Mobile menu toggle
 			const toggle = document.querySelector('.menu-toggle');
 			const menu = document.getElementById('nav-menu');
 			if (toggle && menu) {
@@ -178,14 +211,12 @@ const navItems = menu?.items ?? [
 
 			ul, ol { padding: 0; }
 
-			html {
-				scroll-behavior: smooth;
-			}
+			html { scroll-behavior: smooth; }
 
 			body {
 				font-family: var(--font-sans);
-				font-size: var(--font-size-base);
-				line-height: var(--leading-relaxed);
+				font-size: 16px;
+				line-height: 1.8;
 				color: var(--color-text);
 				background: var(--color-bg);
 				-webkit-font-smoothing: antialiased;
@@ -202,129 +233,108 @@ const navItems = menu?.items ?? [
 				color: var(--color-accent-hover);
 			}
 
-			img {
-				max-width: 100%;
-				height: auto;
-				display: block;
-			}
+			img { max-width: 100%; height: auto; display: block; }
 
 			h1, h2, h3, h4, h5, h6 {
 				font-family: var(--font-sans);
-				line-height: var(--leading-tight);
+				line-height: 1.2;
 				font-weight: 700;
 				color: var(--color-heading);
 			}
 
-			::selection {
-				background: var(--color-accent);
-				color: white;
-			}
+			h1 { font-size: 30px; }
+			h2 { font-size: 28px; }
+			h3 { font-size: 26px; }
+			h4 { font-size: 24px; }
+
+			::selection { background: var(--color-accent); color: white; }
 		</style>
 
 		<style>
 			/* ── Header ─────────────────────── */
-			.header-top {
-				background: var(--color-page);
-				padding: 1.5rem 0;
+			.site-header {
+				background: #f8f8f8;
+				border-bottom: 1px solid #eaeaea;
 			}
 
-			.header-inner, .nav-inner, .footer-inner {
+			.header-inner {
 				max-width: var(--wide-width);
 				margin: 0 auto;
-				padding: 0 1.5rem;
-			}
-
-			.site-branding {
-				text-align: left;
+				padding: 1.5rem 25px;
+				display: flex;
+				justify-content: space-between;
+				align-items: flex-start;
 			}
 
 			.site-title {
-				font-size: 2rem;
+				font-size: 30px;
 				font-weight: 900;
-				color: var(--color-heading);
-				text-decoration: none;
-				letter-spacing: -0.02em;
+				margin: 0;
+				line-height: 1.2;
 			}
 
-			.site-title:hover {
+			.site-title a {
+				color: var(--color-heading);
+				text-decoration: none;
+			}
+
+			.site-title a:hover {
 				color: var(--color-accent);
 			}
 
 			.site-tagline {
-				font-size: var(--font-size-sm);
-				color: var(--color-muted);
-				margin-top: 0.25rem;
+				font-size: 13px;
+				color: #999;
+				margin-top: 4px;
 				font-style: italic;
+			}
+
+			.header-right {
+				text-align: right;
+				padding-top: 0.5rem;
 			}
 
 			/* ── Navigation ─────────────────── */
 			.main-nav {
-				background: var(--color-accent);
-			}
-
-			.nav-inner {
-				display: flex;
-				align-items: stretch;
 			}
 
 			.menu-toggle {
 				display: none;
-				background: none;
+				background: var(--color-accent);
 				border: none;
 				color: white;
 				font-family: var(--font-sans);
-				font-size: var(--font-size-base);
-				padding: 0.75rem 1rem;
+				font-size: 14px;
+				padding: 8px 16px;
 				cursor: pointer;
-				align-items: center;
-				gap: 0.5rem;
 			}
-
-			.menu-icon {
-				display: inline-block;
-				width: 18px;
-				height: 2px;
-				background: white;
-				position: relative;
-			}
-
-			.menu-icon::before,
-			.menu-icon::after {
-				content: '';
-				position: absolute;
-				width: 100%;
-				height: 2px;
-				background: white;
-				left: 0;
-			}
-
-			.menu-icon::before { top: -6px; }
-			.menu-icon::after { top: 6px; }
 
 			.nav-menu {
 				display: flex;
 				list-style: none;
 				margin: 0;
 				padding: 0;
+				gap: 0;
 			}
 
 			.nav-menu li a {
-				display: block;
-				padding: 0.75rem 1rem;
-				color: white;
+				display: inline-block;
+				padding: 4px 12px;
+				color: #444;
 				text-decoration: none;
-				font-size: var(--font-size-sm);
+				font-size: 14px;
 				font-weight: 400;
-				transition: background 0.2s;
+				transition: color 0.2s;
 			}
 
-			.nav-menu li a:hover {
-				background: rgba(0, 0, 0, 0.15);
-				color: white;
+			.nav-menu li a:hover,
+			.nav-menu li.active a {
+				color: var(--color-accent);
 			}
 
 			.nav-admin {
-				opacity: 0.7;
+				opacity: 0.5;
+				font-size: 12px !important;
 			}
 
 			/* ── Page wrapper ────────────────── */
@@ -332,11 +342,75 @@ const navItems = menu?.items ?? [
 				max-width: var(--wide-width);
 				margin: 0 auto;
 				background: var(--color-page);
-				min-height: 60vh;
 			}
 
 			.site-content {
-				padding: 2rem 1.5rem;
+				padding: 30px 25px;
+			}
+
+			/* ── Sidebar layout ──────────────── */
+			.content-with-sidebar {
+				display: flex;
+				gap: 40px;
+				padding: 0 25px;
+			}
+
+			.content-with-sidebar .site-content {
+				flex: 1;
+				min-width: 0;
+				padding: 30px 0;
+			}
+
+			.sidebar {
+				flex: 0 0 300px;
+				padding: 30px 0;
+			}
+
+			.widget {
+				margin-bottom: 2rem;
+			}
+
+			.widget-title {
+				font-size: 20px;
+				font-weight: 700;
+				color: var(--color-heading);
+				margin-bottom: 0.75rem;
+				padding-bottom: 0.5rem;
+				border-bottom: 2px solid var(--color-accent);
+			}
+
+			.widget-list {
+				list-style: none;
+			}
+
+			.widget-list li {
+				padding: 4px 0;
+			}
+
+			.widget-list a {
+				color: var(--color-accent);
+				font-size: 14px;
+			}
+
+			.search-form {
+				display: flex;
+			}
+
+			.search-input {
+				flex: 1;
+				padding: 6px 10px;
+				border: 1px solid #ddd;
+				font-family: var(--font-sans);
+				font-size: 14px;
+			}
+
+			.search-btn {
+				padding: 6px 12px;
+				background: var(--color-accent);
+				border: none;
+				color: white;
+				cursor: pointer;
+				font-size: 14px;
 			}
 
 			/* ── Footer ─────────────────────── */
@@ -345,29 +419,36 @@ const navItems = menu?.items ?? [
 			}
 
 			.footer-widgets {
-				background: var(--color-footer-bg);
-				padding: 2.5rem 0;
+				background: #333;
+				padding: 30px 0;
 			}
 
-			.footer-widgets .footer-inner {
+			.footer-inner-grid {
+				max-width: var(--wide-width);
+				margin: 0 auto;
+				padding: 0 25px;
 				display: grid;
-				grid-template-columns: repeat(3, 1fr);
-				gap: 2rem;
+				grid-template-columns: repeat(4, 1fr);
+				gap: 30px;
 			}
 
 			.footer-col h4 {
-				color: var(--color-footer-heading);
-				font-size: var(--font-size-lg);
+				color: #fff;
+				font-size: 18px;
 				font-weight: 700;
-				margin-bottom: 1rem;
-				text-transform: uppercase;
-				letter-spacing: 0.05em;
+				margin-bottom: 12px;
+				padding-bottom: 8px;
+				border-bottom: 2px solid var(--color-accent);
+			}
+
+			.footer-col h4.mt {
+				margin-top: 1.5rem;
 			}
 
 			.footer-col p,
 			.footer-col li {
-				color: var(--color-footer-text);
-				font-size: var(--font-size-sm);
+				color: #999;
+				font-size: 14px;
 				line-height: 1.8;
 			}
 
@@ -376,60 +457,99 @@ const navItems = menu?.items ?? [
 			}
 
 			.footer-col a {
-				color: var(--color-footer-text);
-				text-decoration: none;
-				transition: color 0.2s;
+				color: var(--color-accent);
 			}
 
 			.footer-col a:hover {
-				color: var(--color-accent);
+				color: #fff;
 			}
 
-			.footer-col :global(.widget-area) {
-				display: block;
-			}
-
-			.footer-col :global(.widget__title) {
-				color: var(--color-footer-heading);
-				font-size: var(--font-size-base);
-				margin-top: 1rem;
-				margin-bottom: 0.5rem;
-			}
-
-			.footer-col :global(.widget__content) {
-				color: var(--color-footer-text);
-				font-size: var(--font-size-sm);
+			.footer-search input {
+				width: 100%;
+				padding: 6px 10px;
+				border: 1px solid #555;
+				background: #444;
+				color: #ddd;
+				font-family: var(--font-sans);
+				font-size: 14px;
 			}
 
 			.footer-socket {
-				background: var(--color-footer-socket-bg);
-				padding: 1rem 0;
-				text-align: center;
+				background: #f8f8f8;
+				padding: 12px 0;
+				border-top: 1px solid #eaeaea;
 			}
 
-			.footer-socket p {
-				color: var(--color-footer-text);
-				font-size: var(--font-size-sm);
+			.footer-socket-inner {
+				max-width: var(--wide-width);
+				margin: 0 auto;
+				padding: 0 25px;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				flex-wrap: wrap;
+				gap: 8px;
+			}
+
+			.copyright {
+				font-size: 13px;
+				color: #666;
 				margin: 0;
 			}
 
-			.footer-socket a {
+			.copyright a {
 				color: var(--color-accent);
+			}
+
+			.footer-nav {
+				display: flex;
+				gap: 16px;
+			}
+
+			.footer-nav a {
+				color: #666;
+				font-size: 13px;
+			}
+
+			.footer-nav a:hover {
+				color: var(--color-accent);
+			}
+
+			/* ── Sidebar widgets from EmDash ── */
+			.sidebar :global(.widget-area) {
+				display: block;
+			}
+
+			.sidebar :global(.widget__title) {
+				font-size: 20px;
+				font-weight: 700;
+				color: var(--color-heading);
+				margin-bottom: 0.75rem;
+				padding-bottom: 0.5rem;
+				border-bottom: 2px solid var(--color-accent);
 			}
 
 			/* ── Responsive ──────────────────── */
 			@media (max-width: 768px) {
-				.menu-toggle {
-					display: flex;
+				.header-inner {
+					flex-direction: column;
 				}
 
-				.nav-inner {
-					flex-direction: column;
+				.header-right {
+					width: 100%;
+					text-align: left;
+					padding-top: 0.75rem;
+				}
+
+				.menu-toggle {
+					display: inline-block;
 				}
 
 				.nav-menu {
 					display: none;
 					flex-direction: column;
+					width: 100%;
+					margin-top: 0.5rem;
 				}
 
 				.nav-menu.open {
@@ -437,16 +557,33 @@ const navItems = menu?.items ?? [
 				}
 
 				.nav-menu li a {
-					padding: 0.75rem 1.5rem;
-					border-top: 1px solid rgba(255, 255, 255, 0.1);
+					padding: 8px 0;
+					display: block;
+					border-top: 1px solid #eaeaea;
 				}
 
-				.footer-widgets .footer-inner {
+				.content-with-sidebar {
+					flex-direction: column;
+				}
+
+				.sidebar {
+					flex: none;
+					border-top: 1px solid #eaeaea;
+					padding-top: 1.5rem;
+				}
+
+				.footer-inner-grid {
 					grid-template-columns: 1fr;
 				}
 
-				.site-title {
-					font-size: 1.5rem;
+				.footer-socket-inner {
+					flex-direction: column;
+					text-align: center;
+				}
+
+				.footer-nav {
+					flex-wrap: wrap;
+					justify-content: center;
 				}
 			}
 		</style>

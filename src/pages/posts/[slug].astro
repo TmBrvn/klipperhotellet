@@ -73,6 +73,7 @@ const publishDate =
 	publishedTime={post.data.publishedAt?.toISOString() ?? null}
 	modifiedTime={post.data.updatedAt.toISOString()}
 	content={{ collection: "posts", id: post.data.id, slug }}
+	sidebar
 >
 	<article class="article">
 		<header class="article-header">
